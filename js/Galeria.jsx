@@ -54,13 +54,13 @@ function PhotoCard({ foto, onDelete, onOpen }) {
 
   return (
     <div className="group relative rounded-xl overflow-hidden border border-ink/10 bg-paperdeep">
-      <button
+      {/* <button
         onClick={(e) => { e.stopPropagation(); onDelete(foto); }}
         aria-label="Eliminar foto"
         className="absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-ink/70 text-paper grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity"
       >
         <IconClose className="w-3 h-3" />
-      </button>
+      </button> */}
       <img
         src={foto.url}
         alt="Foto de la boda"
