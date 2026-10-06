@@ -6,7 +6,7 @@ const { useState, useEffect, useRef, useCallback } = React;
 function Nav() {
   return (
     <nav className="sticky top-0 z-40 flex items-center justify-between px-5 sm:px-10 py-4 bg-paper/85 backdrop-blur-sm border-b border-ink/10">
-      <span className="font-script text-2xl text-ink">C &amp; M</span>
+      <span className="font-script text-2xl text-ink">M &amp; C</span>
       <div className="flex items-center gap-4 sm:gap-8 text-sm">
         <a href="#subir" className="text-ink/70 hover:text-ink transition-colors">Subir fotos</a>
         <a
@@ -56,7 +56,7 @@ function Hero() {
       <div className="relative z-10 max-w-2xl animate-[fadeUp_1s_ease_both]">
         <p className="text-xs tracking-[0.35em] uppercase text-gold font-medium">Nos casamos</p>
         <h1 className="font-script text-[4.2rem] sm:text-[6.5rem] leading-[0.9] text-ink mt-4">
-          Camila <span className="text-gold">&amp;</span> Michael
+          Michael <span className="text-gold">&amp;</span> Camila
         </h1>
 
         <Flourish className="w-40 h-4 mx-auto text-gold/70 mt-6" />

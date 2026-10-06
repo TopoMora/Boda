@@ -3,7 +3,7 @@ const { useState, useEffect, useMemo } = React;
 function Nav() {
   return (
     <nav className="sticky top-0 z-40 flex items-center justify-between px-5 sm:px-10 py-4 bg-paper/85 backdrop-blur-sm border-b border-ink/10">
-      <span className="font-script text-2xl text-ink">E &amp; M</span>
+      <span className="font-script text-2xl text-ink">M &amp; C</span>
       <div className="flex items-center gap-4 sm:gap-8 text-sm">
         <a href="index.html" className="text-ink/70 hover:text-ink transition-colors">Portada</a>
         <a
