@@ -118,6 +118,8 @@ const WeddingStorage = (() => {
 
   // Se suscribe a los cambios del álbum en tiempo real. Devuelve una
   // función para cancelar la suscripción (llamarla al desmontar).
+  // NOTA: trae TODAS las fotos de golpe, sin paginar. Se mantiene por
+  // compatibilidad, pero en la galería se usa onPhotosChangePaginated.
   function onPhotosChange(callback) {
     return window.db
       .collection(COLECCION)
@@ -126,6 +128,47 @@ const WeddingStorage = (() => {
         (snap) => callback(snap.docs.map(mapDoc)),
         (err) => console.error("Error escuchando el álbum:", err)
       );
+  }
+
+  // ---------------------------------------------------------------
+  // Paginación: el primer lote (las fotos más recientes) se escucha
+  // en tiempo real, así que las fotos nuevas siguen apareciendo solas
+  // sin recargar. Los lotes siguientes ("Cargar más") se traen una
+  // sola vez con un cursor (startAfter), sin tiempo real — es un
+  // compromiso normal: una foto borrada en un lote ya cargado no
+  // desaparece sola, hay que recargar la página para verlo reflejado.
+  // ---------------------------------------------------------------
+
+  function onPhotosChangePaginated(pageSize, callback) {
+    return window.db
+      .collection(COLECCION)
+      .orderBy("fecha", "desc")
+      .limit(pageSize)
+      .onSnapshot(
+        (snap) => {
+          callback({
+            fotos: snap.docs.map(mapDoc),
+            cursor: snap.docs[snap.docs.length - 1] || null,
+            hasMore: snap.docs.length === pageSize,
+          });
+        },
+        (err) => console.error("Error escuchando el álbum:", err)
+      );
+  }
+
+  async function loadMorePhotos(cursor, pageSize) {
+    if (!cursor) return { fotos: [], cursor: null, hasMore: false };
+    const snap = await window.db
+      .collection(COLECCION)
+      .orderBy("fecha", "desc")
+      .startAfter(cursor)
+      .limit(pageSize)
+      .get();
+    return {
+      fotos: snap.docs.map(mapDoc),
+      cursor: snap.docs[snap.docs.length - 1] || cursor,
+      hasMore: snap.docs.length === pageSize,
+    };
   }
 
   async function getAllTags() {
@@ -154,5 +197,13 @@ const WeddingStorage = (() => {
     await window.db.collection(COLECCION).doc(id).delete();
   }
 
-  return { addPhoto, getPhotos, onPhotosChange, getAllTags, deletePhoto };
+  return {
+    addPhoto,
+    getPhotos,
+    onPhotosChange,
+    onPhotosChangePaginated,
+    loadMorePhotos,
+    getAllTags,
+    deletePhoto,
+  };
 })();
