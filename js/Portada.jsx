@@ -383,7 +383,7 @@ function UploadForm() {
 function Footer() {
   return (
     <footer className="text-center px-6 pt-8 pb-16 text-ink/60 text-sm">
-      <p className="font-script text-3xl text-ink mb-2">Camila &amp; Michael</p>
+      <p className="font-script text-3xl text-ink mb-2">Michael &amp; Camila</p>
       Gracias por acompañarnos y guardar este día con nosotros.
       <br />
       <a href="galeria.html" className="text-gold hover:text-ink transition-colors">

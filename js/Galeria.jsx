@@ -114,15 +114,26 @@ function Lightbox({ src, onClose }) {
   );
 }
 
+const FOTOS_POR_LOTE = 30;
+
 function App() {
-  const [fotos, setFotos] = useState([]);
+  // Primer lote: en tiempo real (las fotos nuevas aparecen solas).
+  const [fotosRecientes, setFotosRecientes] = useState([]);
+  // Lotes siguientes, cargados bajo demanda con "Cargar más".
+  const [fotosAntiguas, setFotosAntiguas] = useState([]);
+  const [cursor, setCursor] = useState(null);
+  const [hasMore, setHasMore] = useState(false);
   const [cargando, setCargando] = useState(true);
+  const [cargandoMas, setCargandoMas] = useState(false);
+
   const [activo, setActivo] = useState("__todas__");
   const [lightboxSrc, setLightboxSrc] = useState(null);
 
   useEffect(() => {
-    const unsubscribe = WeddingStorage.onPhotosChange((data) => {
-      setFotos(data);
+    const unsubscribe = WeddingStorage.onPhotosChangePaginated(FOTOS_POR_LOTE, (data) => {
+      setFotosRecientes(data.fotos);
+      setCursor(data.cursor);
+      setHasMore(data.hasMore);
       setCargando(false);
     });
     const onEsc = (e) => e.key === "Escape" && setLightboxSrc(null);
@@ -132,6 +143,24 @@ function App() {
       document.removeEventListener("keydown", onEsc);
     };
   }, []);
+
+  async function cargarMas() {
+    setCargandoMas(true);
+    const data = await WeddingStorage.loadMorePhotos(cursor, FOTOS_POR_LOTE);
+    setFotosAntiguas((prev) => [...prev, ...data.fotos]);
+    setCursor(data.cursor);
+    setHasMore(data.hasMore);
+    setCargandoMas(false);
+  }
+
+  // Se combinan ambas listas y se quitan duplicados por id (puede pasar
+  // si una foto nueva empuja el límite del primer lote justo mientras
+  // se carga el siguiente). Se reordena por fecha para que quede estable.
+  const fotos = useMemo(() => {
+    const mapa = new Map();
+    [...fotosRecientes, ...fotosAntiguas].forEach((f) => mapa.set(f.id, f));
+    return Array.from(mapa.values()).sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+  }, [fotosRecientes, fotosAntiguas]);
 
   const tags = useMemo(() => {
     const set = new Set();
@@ -167,11 +196,30 @@ function App() {
         ) : visibles.length === 0 ? (
           <EmptyState />
         ) : (
-          <div className="masonry">
-            {visibles.map((foto) => (
-              <PhotoCard key={foto.id} foto={foto} onDelete={eliminar} onOpen={setLightboxSrc} />
-            ))}
-          </div>
+          <>
+            <div className="masonry">
+              {visibles.map((foto) => (
+                <PhotoCard key={foto.id} foto={foto} onDelete={eliminar} onOpen={setLightboxSrc} />
+              ))}
+            </div>
+
+            {hasMore && (
+              <div className="text-center mt-8">
+                {activo !== "__todas__" && (
+                  <p className="text-xs text-ink/50 mb-3">
+                    Puede haber más fotos con esta etiqueta — carga más para verlas todas.
+                  </p>
+                )}
+                <button
+                  onClick={cargarMas}
+                  disabled={cargandoMas}
+                  className="px-6 py-2.5 rounded-full border border-gold/50 text-ink/80 text-sm hover:bg-gold/10 transition-colors disabled:opacity-50"
+                >
+                  {cargandoMas ? "Cargando…" : "Cargar más fotos"}
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
 
