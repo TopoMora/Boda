@@ -54,13 +54,13 @@ function PhotoCard({ foto, onDelete, onOpen }) {
 
   return (
     <div className="group relative rounded-xl overflow-hidden border border-ink/10 bg-paperdeep">
-      <button
+      {/* <button
         onClick={(e) => { e.stopPropagation(); onDelete(foto); }}
         aria-label="Eliminar foto"
         className="absolute top-2 right-2 z-10 w-7 h-7 rounded-full bg-ink/70 text-paper grid place-items-center opacity-0 group-hover:opacity-100 transition-opacity"
       >
         <IconClose className="w-3 h-3" />
-      </button>
+      </button> */}
       <img
         src={foto.url}
         alt="Foto de la boda"
@@ -90,7 +90,7 @@ function EmptyState() {
     <div className="text-center py-24 px-6 text-ink/60">
       <IconPhoto className="w-11 h-11 mx-auto text-gold mb-5" />
       <h3 className="font-script text-4xl text-ink mb-2">Todavía no hay fotos</h3>
-      <p className="text-sm">Anima a la gente a escanear el código QR de la portada para empezar el álbum.</p>
+      <p className="text-sm">Escanea el código QR de la portada para añadir fotos al álbum.</p>
     </div>
   );
 }
@@ -184,7 +184,7 @@ function App() {
         <p className="text-xs tracking-[0.3em] uppercase text-gold font-medium">El álbum de todos</p>
         <h1 className="font-script text-6xl text-ink mt-2">Nuestros recuerdos</h1>
         <p className="text-sm text-ink/60 max-w-md mx-auto mt-3">
-          Todas las fotos compartidas por los invitados, clasificadas por las etiquetas que ellos mismos han añadido.
+          Todas las fotos compartidas, clasificadas por las etiquetas que han añadido.
         </p>
       </div>
 
